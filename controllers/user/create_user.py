@@ -29,7 +29,8 @@ def create_user():
         "last_name": last_name,
         "password": password,
         "role": role,
-        "created_at": created_at
+        "created_at": created_at,
+        "updated_at": created_at
     }).inserted_id
 
     new_user = mongo.db.user.find_one({"_id": ObjectId(new_user_id)}, {"password": 0})

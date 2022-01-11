@@ -22,6 +22,7 @@ def create_category():
     new_category_id = mongo.db.category.insert_one({
         "category_name": category_name,
         "created_at": created_at,
+        "updated_at": created_at,
         "record_status": record_status
     }).inserted_id
 
