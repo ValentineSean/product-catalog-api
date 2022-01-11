@@ -31,6 +31,7 @@ from controllers.product.get_products import get_products_blueprint
 from controllers.product.update_product import update_product_blueprint
 from controllers.product.delete_product import delete_product_blueprint
 from controllers.product.rate_product import rate_product_blueprint
+from controllers.product.search_products import search_products_blueprint
 
 app = Flask(__name__)
 
@@ -72,6 +73,7 @@ def create_app():
     app.register_blueprint(update_product_blueprint)
     app.register_blueprint(delete_product_blueprint)
     app.register_blueprint(rate_product_blueprint)
+    app.register_blueprint(search_products_blueprint)
 
     return app
 

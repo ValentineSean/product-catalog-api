@@ -16,37 +16,70 @@ def search_product():
     search_criteria = request.args.get("search_criteria")
     search_product = request.json
 
-    search_path = search_product["search_path"]
-    search_index = search_product["search_index"]
     search_string = search_product["search_string"]
 
-    if search_criteria == "product_name":
+    if search_criteria == "product":
         products = mongo.db.product.aggregate([
             {
                 "$search": {
-                    "index": search_index,
+                    "index": "product_index",
                     "text": {
                         "query": search_string,
-                        "path": search_path
+                        "path": "product_name"
                     }
                 }
             }
         ])
 
-        searchd_product = mongo.db.product.find_one({"_id": ObjectId(product_id)})
+        # searchd_product = mongo.db.product.find_one({"_id": ObjectId(product_id)})
 
-        if searchd_product:
-            searchd_product = json.loads(dumps(searchd_product))
+        if products:
+            products = json.loads(dumps(products))
 
-            return jsonify({
-                "status": "200",
-                "message": "product_searchd_ok",
-                "data": searchd_product
-            })
+            if len(products) > 0:
+
+                return jsonify({
+                    "status": "200",
+                    "message": "product_searched_ok",
+                    "data": products
+                })
+
+            else:
+                return jsonify({
+                    "status": "404",
+                    "message": "products_not_found",
+                    "data": []
+                })
 
         else:
             return jsonify({
                 "status": "404",
-                "message": "product_not_found",
-                "data": {}
+                "message": "products_not_found",
+                "data": []
             })
+
+    elif search_criteria == "category":
+        category = mongo.db.category.aggregate([
+            {
+                "$search": {
+                    "index": "category_index",
+                    "text": {
+                        "query": search_string,
+                        "path": "category_name"
+                    }
+                }
+            }
+        ])
+
+    elif search_criteria == "supplier":
+        supplier = mongo.db.user.aggregate([
+            {
+                "$search": {
+                    "index": "supplier_index",
+                    "text": {
+                        "query": search_string,
+                        "path": "supplier_first_name"
+                    }
+                }
+            }
+        ])
