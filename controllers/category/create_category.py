@@ -19,11 +19,11 @@ def create_category():
     created_at = datetime.now()
     record_status = "ACTIVE"
 
-    new_category_id = mongo.db.category.insert({
+    new_category_id = mongo.db.category.insert_one({
         "category_name": category_name,
         "created_at": created_at,
         "record_status": record_status
-    })
+    }).inserted_id
 
     new_category = mongo.db.category.find_one({"$and": [{"_id": ObjectId(new_category_id)}, {"record_status": record_status}]})
     new_category = json.loads(dumps(new_category))

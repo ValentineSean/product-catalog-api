@@ -23,14 +23,14 @@ def create_user():
     role = user["role"]
     created_at = datetime.now()
 
-    new_user_id = mongo.db.user.insert({
+    new_user_id = mongo.db.user.insert_one({
         "email": email,
         "first_name": first_name,
         "last_name": last_name,
         "password": password,
         "role": role,
         "created_at": created_at
-    })
+    }).inserted_id
 
     new_user = mongo.db.user.find_one({"_id": ObjectId(new_user_id)}, {"password": 0})
     new_user = json.loads(dumps(new_user))
