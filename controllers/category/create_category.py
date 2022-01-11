@@ -13,8 +13,6 @@ create_category_blueprint = Blueprint("create_category_blueprint", __name__)
 
 @create_category_blueprint.route("/create-category", methods=["POST"])
 def create_category():
-    category = request.json
-
     category_name = category["category_name"]
     created_at = datetime.now()
     record_status = "ACTIVE"

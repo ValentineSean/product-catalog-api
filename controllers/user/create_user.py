@@ -21,6 +21,7 @@ def create_user():
     last_name = user["last_name"]
     password = user["password"]
     role = user["role"]
+    favorites = []
     created_at = datetime.now()
     record_status = "ACTIVE"
 
@@ -30,6 +31,7 @@ def create_user():
         "last_name": last_name,
         "password": password,
         "role": role,
+        "favorites": favorites,
         "created_at": created_at,
         "updated_at": created_at,
         "record_status": record_status
