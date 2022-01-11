@@ -10,15 +10,15 @@ from flask_bcrypt import generate_password_hash
 # Database
 from configurations.database import mongo
 
-update_category_blueprint = Blueprint("update_category_blueprint", __name__)
+delete_category_blueprint = Blueprint("delete_category_blueprint", __name__)
 
-@update_category_blueprint.route("/update-category", methods=["PUT"])
-def update_category():
+@delete_category_blueprint.route("/delete-category", methods=["DELETE"])
+def delete_category():
     category = request.json
 
     category_id = category["category_id"]
     category_id = category_id["$oid"]
-    category_name = category["category_name"]
+    record_status = "DELETED"
     updated_at = datetime.now()
 
     mongo.db.category.update_one({
@@ -26,20 +26,20 @@ def update_category():
         },
 
         {"$set": {
-            "category_name": category_name,
+            "record_status": record_status,
             "updated_at": updated_at
         }
     })
+    
+    deleted_category = mongo.db.category.find_one({"_id": ObjectId(category_id)})
 
-    updated_category = mongo.db.category.find_one({"_id": ObjectId(category_id)}, {"password": 0})
-
-    if updated_category:
-        updated_category = json.loads(dumps(updated_category))
+    if deleted_category:
+        deleted_category = json.loads(dumps(deleted_category))
 
         return jsonify({
             "status": "200",
-            "message": "category_updated_ok",
-            "data": updated_category
+            "message": "category_deleted_ok",
+            "data": deleted_category
         })
 
     else:

@@ -22,6 +22,7 @@ def create_user():
     password = user["password"]
     role = user["role"]
     created_at = datetime.now()
+    record_status = "ACTIVE"
 
     new_user_id = mongo.db.user.insert_one({
         "email": email,
@@ -30,14 +31,24 @@ def create_user():
         "password": password,
         "role": role,
         "created_at": created_at,
-        "updated_at": created_at
+        "updated_at": created_at,
+        "record_status": record_status
     }).inserted_id
 
     new_user = mongo.db.user.find_one({"_id": ObjectId(new_user_id)}, {"password": 0})
-    new_user = json.loads(dumps(new_user))
 
-    return jsonify({
-        "status": "200",
-        "message": "user_created_ok",
-        "data": new_user
-    })
+    if new_user:
+        new_user = json.loads(dumps(new_user))
+
+        return jsonify({
+            "status": "200",
+            "message": "user_created_ok",
+            "data": new_user
+        })
+
+    else:
+        return jsonify({
+            "status": "404",
+            "message": "user_created_not_found",
+            "data": {}
+        })

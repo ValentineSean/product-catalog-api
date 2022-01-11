@@ -27,10 +27,19 @@ def create_category():
     }).inserted_id
 
     new_category = mongo.db.category.find_one({"$and": [{"_id": ObjectId(new_category_id)}, {"record_status": record_status}]})
-    new_category = json.loads(dumps(new_category))
 
-    return jsonify({
-        "status": "200",
-        "message": "category_created_ok",
-        "data": new_category
-    })
+    if new_category:
+        new_category = json.loads(dumps(new_category))
+
+        return jsonify({
+            "status": "200",
+            "message": "category_created_ok",
+            "data": new_category
+        })
+
+    else:
+        return jsonify({
+            "status": "404",
+            "message": "category_created_not_found",
+            "data": {}
+        })

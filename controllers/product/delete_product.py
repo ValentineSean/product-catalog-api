@@ -10,16 +10,15 @@ from flask_bcrypt import generate_password_hash
 # Database
 from configurations.database import mongo
 
-update_product_blueprint = Blueprint("update_product_blueprint", __name__)
+delete_product_blueprint = Blueprint("delete_product_blueprint", __name__)
 
-@update_product_blueprint.route("/update-product", methods=["PUT"])
-def update_product():
+@delete_product_blueprint.route("/delete-product", methods=["DELETE"])
+def delete_product():
     product = request.json
 
     product_id = product["product_id"]
     product_id = product_id["$oid"]
-    product_name = product["product_name"]
-    image_url = product["image_url"]
+    record_status = "DELETED"
     updated_at = datetime.now()
 
     mongo.db.product.update_one({
@@ -27,21 +26,20 @@ def update_product():
         },
 
         {"$set": {
-            "product_name": product_name,
-            "image_url": image_url,
+            "record_status": record_status,
             "updated_at": updated_at
         }
     })
+    
+    deleted_product = mongo.db.product.find_one({"_id": ObjectId(product_id)})
 
-    updated_product = mongo.db.product.find_one({"_id": ObjectId(product_id)}, {"password": 0})
-
-    if updated_product:
-        updated_product = json.loads(dumps(updated_product))
+    if deleted_product:
+        deleted_product = json.loads(dumps(deleted_product))
 
         return jsonify({
             "status": "200",
-            "message": "product_updated_ok",
-            "data": updated_product
+            "message": "product_deleted_ok",
+            "data": deleted_product
         })
 
     else:

@@ -10,19 +10,15 @@ from flask_bcrypt import generate_password_hash
 # Database
 from configurations.database import mongo
 
-update_user_blueprint = Blueprint("update_user_blueprint", __name__)
+delete_user_blueprint = Blueprint("delete_user_blueprint", __name__)
 
-@update_user_blueprint.route("/update-user", methods=["PUT"])
-def update_user():
+@delete_user_blueprint.route("/delete-user", methods=["DELETE"])
+def delete_user():
     user = request.json
 
     user_id = user["user_id"]
     user_id = user_id["$oid"]
-    email = user["email"]
-    first_name = user["first_name"]
-    last_name = user["last_name"]
-    password = user["password"]
-    role = user["role"]
+    record_status = "DELETED"
     updated_at = datetime.now()
 
     mongo.db.user.update_one({
@@ -30,24 +26,20 @@ def update_user():
         },
 
         {"$set": {
-            "email": email,
-            "first_name": first_name,
-            "last_name": last_name,
-            "password": password,
-            "role": role,
+            "record_status": record_status,
             "updated_at": updated_at
         }
     })
 
-    updated_user = mongo.db.user.find_one({"_id": ObjectId(user_id)}, {"password": 0})
+    deleted_user = mongo.db.user.find_one({"_id": ObjectId(user_id)}, {"password": 0})
 
-    if update_user:
-        updated_user = json.loads(dumps(updated_user))
+    if deleted_user:
+        deleted_user = json.loads(dumps(deleted_user))
 
         return jsonify({
             "status": "200",
-            "message": "user_updated_ok",
-            "data": updated_user
+            "message": "user_deleted_ok",
+            "data": deleted_user
         })
 
     else:

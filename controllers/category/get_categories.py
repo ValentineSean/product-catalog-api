@@ -13,8 +13,8 @@ get_categories_blueprint = Blueprint("get_categories_blueprint", __name__)
 
 @get_categories_blueprint.route("/get-categories", methods=["GET"])
 def get_categories():
-
-    categories = mongo.db.category.find()
+    active = "ACTIVE"
+    categories = mongo.db.category.find({"record_status": active})
 
     if categories:
         categories = json.loads(dumps(categories))

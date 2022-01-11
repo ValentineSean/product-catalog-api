@@ -17,16 +17,19 @@ from controllers.auth.login import login_blueprint
 from controllers.user.create_user import create_user_blueprint
 from controllers.user.get_users import get_users_blueprint
 from controllers.user.update_user import update_user_blueprint
+from controllers.user.delete_user import delete_user_blueprint
 
 # CATEGORY
 from controllers.category.create_category import create_category_blueprint
 from controllers.category.get_categories import get_categories_blueprint
 from controllers.category.update_category import update_category_blueprint
+from controllers.category.delete_category import delete_category_blueprint
 
 # PRODUCT
 from controllers.product.create_product import create_product_blueprint
 from controllers.product.get_products import get_products_blueprint
 from controllers.product.update_product import update_product_blueprint
+from controllers.product.delete_product import delete_product_blueprint
 
 app = Flask(__name__)
 
@@ -54,16 +57,19 @@ def create_app():
     app.register_blueprint(create_user_blueprint)
     app.register_blueprint(get_users_blueprint)
     app.register_blueprint(update_user_blueprint)
+    app.register_blueprint(delete_user_blueprint)
 
     # CATEGORY
     app.register_blueprint(create_category_blueprint)
     app.register_blueprint(get_categories_blueprint)
     app.register_blueprint(update_category_blueprint)
+    app.register_blueprint(delete_category_blueprint)
 
     # PRODUCT
     app.register_blueprint(create_product_blueprint)
     app.register_blueprint(get_products_blueprint)
     app.register_blueprint(update_product_blueprint)
+    app.register_blueprint(delete_product_blueprint)
 
     return app
 

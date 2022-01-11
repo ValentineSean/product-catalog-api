@@ -13,8 +13,8 @@ get_users_blueprint = Blueprint("get_users_blueprint", __name__)
 
 @get_users_blueprint.route("/get-users", methods=["GET"])
 def get_users():
-
-    users = mongo.db.user.find({}, {"password": 0})
+    active = "ACTIVE"
+    users = mongo.db.user.find({"record_status": active}, {"password": 0})
 
     if users:
         users = json.loads(dumps(users))

@@ -13,8 +13,8 @@ get_products_blueprint = Blueprint("get_products_blueprint", __name__)
 
 @get_products_blueprint.route("/get-products", methods=["GET"])
 def get_products():
-
-    products = mongo.db.product.find()
+    active = "ACTIVE"
+    products = mongo.db.product.find({"record_status": active})
 
     if products:
         products = json.loads(dumps(products))
