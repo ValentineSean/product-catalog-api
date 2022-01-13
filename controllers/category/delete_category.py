@@ -46,5 +46,5 @@ def delete_category():
         return jsonify({
             "status": "404",
             "message": "category_not_found",
-            "data": {}
+            "data": []
         })

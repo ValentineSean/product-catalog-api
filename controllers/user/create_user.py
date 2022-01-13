@@ -37,7 +37,7 @@ def create_user():
         "record_status": record_status
     }).inserted_id
 
-    new_user = mongo.db.user.find_one({"_id": ObjectId(new_user_id)}, {"password": 0})
+    new_user = mongo.db.user.find_one({"$and": [{"_id": ObjectId(new_user_id)}, {"record_status": record_status}]}, {"password": 0})
 
     if new_user:
         new_user = json.loads(dumps(new_user))
@@ -52,5 +52,5 @@ def create_user():
         return jsonify({
             "status": "404",
             "message": "user_created_not_found",
-            "data": {}
+            "data": []
         })

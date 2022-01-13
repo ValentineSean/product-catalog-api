@@ -17,7 +17,7 @@ def get_products():
     # products = mongo.db.product.find({"record_status": active})
     products = mongo.db.product.aggregate(
         [
-            {"$match": {"record_status": active}},
+            {"$match": {"$and": [{"record_status": active}, {"record_status": active}]}},
 
             {"$lookup": {
                 "from": "category",
@@ -42,11 +42,19 @@ def get_products():
     if products:
         products = json.loads(dumps(products))
 
-        return jsonify({
-            "status": "200",
-            "message": "products_retrieved_ok",
-            "data": products
-        })
+        if len(products) > 0:
+            return jsonify({
+                "status": "200",
+                "message": "products_retrieved_ok",
+                "data": products
+            })
+
+        else:
+            return jsonify({
+                "status": "404",
+                "message": "products_not_found",
+                "data": []
+            })
 
     else:
         return jsonify({

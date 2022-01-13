@@ -26,14 +26,14 @@ def add_favorite():
         {"$push": {"favorites": product_id}
     })
 
-    updated_user = mongo.db.user.find_one({"_id": ObjectId(customer_id)}, {"password": 0})
+    updated_user = mongo.db.user.find_one({"$and": [{"_id": ObjectId(customer_id)}, {"record_status": "ACTIVE"}]}, {"password": 0})
 
     if updated_user:
         updated_user = json.loads(dumps(updated_user))
 
         return jsonify({
             "status": "200",
-            "message": "user_updated_ok",
+            "message": "favorite_added_ok",
             "data": updated_user
         })
 
@@ -41,5 +41,5 @@ def add_favorite():
         return jsonify({
             "status": "404",
             "message": "user_not_found",
-            "data": {}
+            "data": []
         })

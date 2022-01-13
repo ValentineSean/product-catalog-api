@@ -20,7 +20,7 @@ def rate_product():
     # product_id = product_id["$oid"]
     rating = product["rating"]
 
-    product = mongo.db.product.find_one({"_id": ObjectId(product_id)})
+    product = mongo.db.product.find_one({"$and": [{"_id": ObjectId(product_id)}, {"record_status": "ACTIVE"}]})
 
     if product:
         product = json.loads(dumps(product))
@@ -41,27 +41,59 @@ def rate_product():
             }
         })
 
-        rated_product = mongo.db.product.find_one({"_id": ObjectId(product_id)})
+        # rated_product = mongo.db.product.find_one({"_id": ObjectId(product_id)})
+
+        rated_product = mongo.db.product.aggregate(
+            [
+                {"$match": {"$and": [{"_id": ObjectId(product_id)}, {"record_status": "ACTIVE"}]}},
+
+                {"$lookup": {
+                    "from": "category",
+                    "localField": "category",
+                    "foreignField": "_id",
+                    "as": "category"
+                }},
+
+                {"$unwind": "$category"},
+
+                {"$lookup": {
+                    "from": "user",
+                    "localField": "supplier",
+                    "foreignField": "_id",
+                    "as": "supplier"
+                }},
+
+                {"$unwind": "$supplier"}
+            ]
+        )
 
         if rated_product:
             rated_product = json.loads(dumps(rated_product))
 
-            return jsonify({
-                "status": "200",
-                "message": "product_rated_ok",
-                "data": rated_product
-            })
+            if len(rated_product) > 0:
+                return jsonify({
+                    "status": "200",
+                    "message": "product_rated_ok",
+                    "data": rated_product
+                })
+
+            else:
+                return jsonify({
+                    "status": "404",
+                    "message": "product_not_found",
+                    "data": []
+                })
 
         else:
             return jsonify({
                 "status": "404",
                 "message": "product_not_found",
-                "data": {}
+                "data": []
             })
 
     else:
         return jsonify({
             "status": "404",
             "message": "product_not_found",
-            "data": {}
+            "data": []
         })

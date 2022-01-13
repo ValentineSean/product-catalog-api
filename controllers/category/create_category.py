@@ -40,5 +40,5 @@ def create_category():
         return jsonify({
             "status": "404",
             "message": "category_created_not_found",
-            "data": {}
+            "data": []
         })

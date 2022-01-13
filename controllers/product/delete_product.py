@@ -46,5 +46,5 @@ def delete_product():
         return jsonify({
             "status": "404",
             "message": "product_not_found",
-            "data": {}
+            "data": []
         })

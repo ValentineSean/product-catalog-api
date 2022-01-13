@@ -16,9 +16,9 @@ def get_supplier_stock():
     active = "ACTIVE"
     supplier = request.args.get("supplier")
     # products = mongo.db.product.find({"record_status": active})
-    products = mongo.db.product.aggregate(
+    stock = mongo.db.product.aggregate(
         [
-            {"$match": {"supplier": ObjectId(supplier)}},
+            {"$match": {"$and": [{"supplier": ObjectId(supplier)}, {"record_status": active}]}},
 
             {"$lookup": {
                 "from": "category",
@@ -40,18 +40,26 @@ def get_supplier_stock():
         ]
     )
 
-    if products:
-        products = json.loads(dumps(products))
+    if stock:
+        stock = json.loads(dumps(stock))
 
-        return jsonify({
-            "status": "200",
-            "message": "products_retrieved_ok",
-            "data": products
-        })
+        if len(stock) > 0:
+            return jsonify({
+                "status": "200",
+                "message": "stock_retrieved_ok",
+                "data": stock
+            })
+
+        else:
+            return jsonify({
+                "status": "404",
+                "message": "stock_not_found",
+                "data": []
+            })
 
     else:
         return jsonify({
             "status": "404",
-            "message": "products_not_found",
+            "message": "stock_not_found",
             "data": []
         })

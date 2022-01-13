@@ -46,5 +46,5 @@ def delete_user():
         return jsonify({
             "status": "404",
             "message": "user_not_found",
-            "data": {}
+            "data": []
         })

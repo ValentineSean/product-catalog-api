@@ -23,7 +23,7 @@ def login():
 
         # user = User.objects(record_status="ACTIVE",email=email).first()
 
-        user = mongo.db.user.find_one({"email": email})
+        user = mongo.db.user.find_one({"$and": [{"email": email}, {"record_status": "ACTIVE"}]})
 
         if user:
             user = json.loads(dumps(user))

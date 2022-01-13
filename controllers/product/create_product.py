@@ -74,7 +74,7 @@ def create_product():
             #     # ]}
             # }],
             [
-                {"$match": {"_id": ObjectId(new_product_id)}},
+                {"$match": {"$and": [{"_id": ObjectId(new_product_id)}, {"record_status": record_status}]}},
 
                 {"$lookup": {
                     "from": "category",
@@ -99,22 +99,30 @@ def create_product():
         if new_product:
             new_product = json.loads(dumps(new_product))
 
-            return jsonify({
-                "status": "200",
-                "message": "product_created_ok",
-                "data": new_product
-            })
+            if len(new_product) > 0:
+                return jsonify({
+                    "status": "200",
+                    "message": "product_created_ok",
+                    "data": new_product
+                })
+
+            else:
+                return jsonify({
+                    "status": "404",
+                    "message": "product_created_not_found",
+                    "data": []
+                })
 
         else:
             return jsonify({
                 "status": "404",
                 "message": "product_created_not_found",
-                "data": {}
+                "data": []
             })
 
     except:
         return jsonify({
             "status": "500",
             "message": "product_image_upload_error",
-            "data": {}
+            "data": []
         })

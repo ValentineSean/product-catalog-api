@@ -39,7 +39,7 @@ def update_user():
         }
     })
 
-    updated_user = mongo.db.user.find_one({"_id": ObjectId(user_id)}, {"password": 0})
+    updated_user = mongo.db.user.find_one({"$and": [{"_id": ObjectId(user_id)}, {"record_status": "ACTIVE"}]}, {"password": 0})
 
     if update_user:
         updated_user = json.loads(dumps(updated_user))
@@ -54,5 +54,5 @@ def update_user():
         return jsonify({
             "status": "404",
             "message": "user_not_found",
-            "data": {}
+            "data": []
         })
