@@ -31,6 +31,8 @@ def search_product():
                 }
             },
 
+            {"$match": {"record_status": "ACTIVE"}},
+
             {"$lookup": {
                 "from": "category",
                 "localField": "category",
@@ -88,7 +90,8 @@ def search_product():
                         "fuzzy": {}
                     }
                 }
-            }
+            },
+            {"$match": {"record_status": "ACTIVE"}},
         ])
 
         if categories:
@@ -100,7 +103,7 @@ def search_product():
                 category = category["_id"]["$oid"]
 
                 products = mongo.db.product.aggregate([
-                    {"$match": {"category": ObjectId(category)}},
+                    {"$match": {"$and": [{"category": ObjectId(category)}, {"record_status": "ACTIVE"}]}},
 
                     {"$lookup": {
                         "from": "category",
@@ -124,11 +127,20 @@ def search_product():
                 if products:
                     products = json.loads(dumps(products))
 
-                    return jsonify({
-                        "status": "200",
-                        "message": "products_searched_ok",
-                        "data": products
-                    })
+                    if len(products) > 0:
+
+                        return jsonify({
+                            "status": "200",
+                            "message": "products_searched_ok",
+                            "data": products
+                        })
+
+                    else:
+                        return jsonify({
+                            "status": "404",
+                            "message": "products_not_found",
+                            "data": []
+                        })
 
                 else:
                     return jsonify({
@@ -151,12 +163,8 @@ def search_product():
                 "data": []
             })
 
-
-
     elif search_criteria == "supplier":
-        suppliers= mongo.db.user.aggregate([
-            {"$match": {"role": "SUPPLIER"}},
-
+        suppliers = mongo.db.user.aggregate([
             {
                 "$search": {
                     "index": "supplier_index",
@@ -166,7 +174,8 @@ def search_product():
                         "fuzzy": {}
                     }
                 }
-            }
+            },
+            {"$match": {"$and": [{"role": "SUPPLIER"}, {"record_status": "ACTIVE"}]}},
         ])
 
         if suppliers:
@@ -178,7 +187,7 @@ def search_product():
                 supplier = supplier["_id"]["$oid"]
 
                 products = mongo.db.product.aggregate([
-                    {"$match": {"category": ObjectId(supplier)}},
+                    {"$match": {"$and": [{"supplier": ObjectId(supplier)}, {"record_status": "ACTIVE"}]}},
 
                     {"$lookup": {
                         "from": "category",
@@ -202,11 +211,20 @@ def search_product():
                 if products:
                     products = json.loads(dumps(products))
 
-                    return jsonify({
-                        "status": "200",
-                        "message": "products_searched_ok",
-                        "data": products
-                    })
+                    if len(products) > 0:
+
+                        return jsonify({
+                            "status": "200",
+                            "message": "products_searched_ok",
+                            "data": products
+                        })
+
+                    else:
+                        return jsonify({
+                            "status": "404",
+                            "message": "products_not_found",
+                            "data": []
+                        })
 
                 else:
                     return jsonify({
