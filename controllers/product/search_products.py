@@ -28,7 +28,25 @@ def search_product():
                         "path": "product_name"
                     }
                 }
-            }
+            },
+
+            {"$lookup": {
+                "from": "category",
+                "localField": "category",
+                "foreignField": "_id",
+                "as": "category"
+            }},
+
+            {"$unwind": "$category"},
+
+            {"$lookup": {
+                "from": "user",
+                "localField": "supplier",
+                "foreignField": "_id",
+                "as": "supplier"
+            }},
+
+            {"$unwind": "$supplier"}
         ])
 
         # searchd_product = mongo.db.product.find_one({"_id": ObjectId(product_id)})

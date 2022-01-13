@@ -27,7 +27,9 @@ def create_product():
     product_name = product["product_name"]
     category = product["category"]
     quantity_available = product["quantity_available"]
+    unit_price = product["unit_price"]
     supplier = product["supplier"]
+    votes = 0
     rating = 0
     # image_url = product["image_url"]
     created_at = datetime.now()
@@ -52,29 +54,47 @@ def create_product():
 
         new_product_id = mongo.db.product.insert_one({
             "product_name": product_name,
-            "category": {
-                "$ref": "category",
-                "$id": ObjectId(category)
-            },
-            "quantity_available": quantity_available,
-            "supplier": supplier,
+            "category": ObjectId(category),
+            "quantity_available": int(quantity_available),
+            "unit_price": float(unit_price),
+            "supplier": ObjectId(supplier),
+            "votes": votes,
             "rating": rating,
             "created_at": created_at,
             "image_url": image_url,
             "record_status": record_status
         }).inserted_id
 
-        new_product = mongo.db.product.find_one({
-            "$and":[
-                {"_id": ObjectId(new_product_id)},
-                {"record_status": record_status}
-            ],
+        new_product = mongo.db.product.aggregate(
+            # [{
+            #     "$match": {"_id": ObjectId(new_product_id)}
+            #     # "$and":[
+            #     #     {"_id": ObjectId(new_product_id)},
+            #     #     {"record_status": record_status}
+            #     # ]}
+            # }],
+            [
+                {"$match": {"_id": ObjectId(new_product_id)}},
 
-            "category": {
-                "$ref": "category",
-                "$id": ObjectId(category)
-            },
-        })
+                {"$lookup": {
+                    "from": "category",
+                    "localField": "category",
+                    "foreignField": "_id",
+                    "as": "category"
+                }},
+
+                {"$unwind": "$category"},
+
+                {"$lookup": {
+                    "from": "user",
+                    "localField": "supplier",
+                    "foreignField": "_id",
+                    "as": "supplier"
+                }},
+
+                {"$unwind": "$supplier"}
+            ]
+        )
 
         if new_product:
             new_product = json.loads(dumps(new_product))

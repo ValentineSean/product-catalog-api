@@ -20,25 +20,44 @@ def rate_product():
     product_id = product_id["$oid"]
     rating = product["rating"]
 
-    mongo.db.product.update_one({
+    product = mongo.db.product.find_one({"_id": ObjectId(product_id)})
+
+    if product:
+        product = json.loads(dumps(product))
+
+        votes = product["votes"]
+        new_votes = product["votes"] + 1
+        old_rating = product["rating"]
+
+        new_rating = ((old_rating * votes) + rating) / (new_votes)
+
+        mongo.db.product.update_one({
             "_id": ObjectId(product_id),
-        },
+            },
 
-        {"$set": {
-            "rating": rating,
-        }
-    })
-
-    rated_product = mongo.db.product.find_one({"_id": ObjectId(product_id)})
-
-    if rated_product:
-        rated_product = json.loads(dumps(rated_product))
-
-        return jsonify({
-            "status": "200",
-            "message": "product_rated_ok",
-            "data": rated_product
+            {"$set": {
+                "rating": new_rating,
+                "votes": new_votes
+            }
         })
+
+        rated_product = mongo.db.product.find_one({"_id": ObjectId(product_id)})
+
+        if rated_product:
+            rated_product = json.loads(dumps(rated_product))
+
+            return jsonify({
+                "status": "200",
+                "message": "product_rated_ok",
+                "data": rated_product
+            })
+
+        else:
+            return jsonify({
+                "status": "404",
+                "message": "product_not_found",
+                "data": {}
+            })
 
     else:
         return jsonify({

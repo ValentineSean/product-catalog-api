@@ -9,15 +9,16 @@ from flask import Blueprint, request, jsonify
 # Database
 from configurations.database import mongo
 
-get_products_blueprint = Blueprint("get_products_blueprint", __name__)
+get_supplier_stock_blueprint = Blueprint("get_supplier_stock_blueprint", __name__)
 
-@get_products_blueprint.route("/get-products", methods=["GET"])
-def get_products():
+@get_supplier_stock_blueprint.route("/get-supplier-stock", methods=["GET"])
+def get_supplier_stock():
     active = "ACTIVE"
+    supplier = request.args.get("supplier")
     # products = mongo.db.product.find({"record_status": active})
     products = mongo.db.product.aggregate(
         [
-            {"$match": {"record_status": active}},
+            {"$match": {"supplier": ObjectId(supplier)}},
 
             {"$lookup": {
                 "from": "category",

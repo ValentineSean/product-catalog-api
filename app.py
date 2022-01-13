@@ -19,6 +19,12 @@ from controllers.user.get_users import get_users_blueprint
 from controllers.user.update_user import update_user_blueprint
 from controllers.user.delete_user import delete_user_blueprint
 
+# CUSTOMER
+from controllers.customer.add_favorite import add_favorite_blueprint
+
+# SUPPLIER
+from controllers.supplier.get_supplier_stock import get_supplier_stock_blueprint
+
 # CATEGORY
 from controllers.category.create_category import create_category_blueprint
 from controllers.category.get_categories import get_categories_blueprint
@@ -61,6 +67,9 @@ def create_app():
     app.register_blueprint(update_user_blueprint)
     app.register_blueprint(delete_user_blueprint)
 
+    # CUSTOMER
+    app.register_blueprint(add_favorite_blueprint)
+
     # CATEGORY
     app.register_blueprint(create_category_blueprint)
     app.register_blueprint(get_categories_blueprint)
@@ -74,6 +83,7 @@ def create_app():
     app.register_blueprint(delete_product_blueprint)
     app.register_blueprint(rate_product_blueprint)
     app.register_blueprint(search_products_blueprint)
+    app.register_blueprint(get_supplier_stock_blueprint)
 
     return app
 
