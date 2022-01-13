@@ -1,8 +1,11 @@
 import os
+import json
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_pymongo import PyMongo
 from dotenv import load_dotenv
+
+from werkzeug.exceptions import BadRequest, InternalServerError, MethodNotAllowed, NotFound, ServiceUnavailable, Unauthorized
 
 # CONFIGURATIONS
 from configurations.database import mongo, database_credentials
@@ -58,6 +61,7 @@ def create_app():
     jwt.init_app(app)
     bcrypt.init_app(app)
 
+    # BLUEPRINTS REGISTRATION
     # AUTH
     app.register_blueprint(login_blueprint)
 
@@ -84,6 +88,99 @@ def create_app():
     app.register_blueprint(rate_product_blueprint)
     app.register_blueprint(search_products_blueprint)
     app.register_blueprint(get_supplier_stock_blueprint)
+
+    # -----------------------------------------------------
+    # EXCEPTIONS
+    @app.errorhandler(InternalServerError)
+    def handle_exception(e):
+        status_code = json.dumps(e.code)
+        return jsonify({
+            "status": str(status_code),
+            "message": "default_{}".format(status_code),
+        })
+
+    @app.errorhandler(ServiceUnavailable)
+    def handle_exception(e):
+        status_code = json.dumps(e.code)
+        return jsonify({
+            "status": str(status_code),
+            "message": "default_{}".format(status_code),
+        })
+
+    @app.errorhandler(BadRequest)
+    def handle_exception(e):
+        status_code = json.dumps(e.code)
+        return jsonify({
+            "status": str(status_code),
+            "message": "default_{}".format(status_code),
+        })
+
+    @app.errorhandler(NotFound)
+    def handle_exception(e):
+        status_code = json.dumps(e.code)
+        return jsonify({
+            "status": str(status_code),
+            "message": "default_{}".format(status_code),
+        })
+
+    @app.errorhandler(MethodNotAllowed)
+    def handle_exception(e):
+        status_code = json.dumps(e.code)
+        return jsonify({
+            "message": "default_{}".format(status_code),
+            "status": str(status_code)
+        })
+
+    @app.errorhandler(Unauthorized)
+    def handle_exception(e):
+        status_code = json.dumps(e.code)
+        return jsonify({
+            "message": "default_{}".format(status_code),
+            "status": str(status_code)
+        })
+
+    # JWT CUSTOM BEHAVIOUR
+    @jwt.expired_token_loader
+    def expired_token_handler(*argv):
+        return jsonify({
+            "message": "token_expired",
+            "status": "401"
+        })
+
+    @jwt.invalid_token_loader
+    def invalid_token_handler(*argv):
+        return jsonify({
+            "message": "invalid_token",
+            "status": "401"
+        })
+
+    @jwt.needs_fresh_token_loader
+    def needs_fresh_token_handler(*argv):
+        return jsonify({
+            "message": "requires_fresh_token",
+            "status": "401"
+        })
+
+    @jwt.revoked_token_loader
+    def revoked_token_handler(*argv):
+        return jsonify({
+            "message": "token_revoked",
+            "status": "401"
+        })
+
+    @jwt.token_verification_failed_loader
+    def token_verification_failed_handler(*argv):
+        return jsonify({
+            "message": "token_verification_fails",
+            "status": "401"
+        })
+
+    @jwt.unauthorized_loader
+    def unauthorized_handler(*argv):
+        return jsonify({
+            "message": "token_required",
+            "status": "401"
+        })
 
     return app
 
