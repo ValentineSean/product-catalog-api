@@ -17,7 +17,7 @@ def rate_product():
     product = request.json
 
     product_id = product["product_id"]
-    product_id = product_id["$oid"]
+    # product_id = product_id["$oid"]
     rating = product["rating"]
 
     product = mongo.db.product.find_one({"_id": ObjectId(product_id)})

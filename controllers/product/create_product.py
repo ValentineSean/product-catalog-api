@@ -19,7 +19,7 @@ create_product_blueprint = Blueprint("create_product_blueprint", __name__)
 
 @create_product_blueprint.route("/create-product", methods=["POST"])
 def create_product():
-    product = request.json
+    # product = request.json
 
     product = request.form
     product_image = request.files["product_image"]

@@ -25,7 +25,8 @@ def search_product():
                     "index": "product_index",
                     "text": {
                         "query": search_string,
-                        "path": "product_name"
+                        "path": "product_name",
+                        "fuzzy": {}
                     }
                 }
             },
@@ -58,7 +59,7 @@ def search_product():
 
                 return jsonify({
                     "status": "200",
-                    "message": "product_searched_ok",
+                    "message": "products_searched_ok",
                     "data": products
                 })
 
@@ -77,27 +78,153 @@ def search_product():
             })
 
     elif search_criteria == "category":
-        category = mongo.db.category.aggregate([
+        categories = mongo.db.category.aggregate([
             {
                 "$search": {
                     "index": "category_index",
                     "text": {
                         "query": search_string,
-                        "path": "category_name"
+                        "path": "category_name",
+                        "fuzzy": {}
                     }
                 }
             }
         ])
 
+        if categories:
+            categories = json.loads(dumps(categories))
+
+            if len(categories) > 0:
+
+                category = categories[0]
+                category = category["_id"]["$oid"]
+
+                products = mongo.db.product.aggregate([
+                    {"$match": {"category": ObjectId(category)}},
+
+                    {"$lookup": {
+                        "from": "category",
+                        "localField": "category",
+                        "foreignField": "_id",
+                        "as": "category"
+                    }},
+
+                    {"$unwind": "$category"},
+
+                    {"$lookup": {
+                        "from": "user",
+                        "localField": "supplier",
+                        "foreignField": "_id",
+                        "as": "supplier"
+                    }},
+
+                    {"$unwind": "$supplier"}
+                ])
+
+                if products:
+                    products = json.loads(dumps(products))
+
+                    return jsonify({
+                        "status": "200",
+                        "message": "products_searched_ok",
+                        "data": products
+                    })
+
+                else:
+                    return jsonify({
+                        "status": "404",
+                        "message": "products_not_found",
+                        "data": []
+                    })
+
+            else:
+                return jsonify({
+                    "status": "404",
+                    "message": "category_not_found",
+                    "data": []
+                })
+
+        else:
+            return jsonify({
+                "status": "404",
+                "message": "category_not_found",
+                "data": []
+            })
+
+
+
     elif search_criteria == "supplier":
-        supplier = mongo.db.user.aggregate([
+        suppliers= mongo.db.user.aggregate([
+            {"$match": {"role": "SUPPLIER"}},
+
             {
                 "$search": {
                     "index": "supplier_index",
                     "text": {
                         "query": search_string,
-                        "path": "supplier_first_name"
+                        "path": ["first_name", "last_name"],
+                        "fuzzy": {}
                     }
                 }
             }
         ])
+
+        if suppliers:
+            suppliers = json.loads(dumps(suppliers))
+
+            if len(suppliers) > 0:
+
+                supplier = suppliers[0]
+                supplier = supplier["_id"]["$oid"]
+
+                products = mongo.db.product.aggregate([
+                    {"$match": {"category": ObjectId(supplier)}},
+
+                    {"$lookup": {
+                        "from": "category",
+                        "localField": "category",
+                        "foreignField": "_id",
+                        "as": "category"
+                    }},
+
+                    {"$unwind": "$category"},
+
+                    {"$lookup": {
+                        "from": "user",
+                        "localField": "supplier",
+                        "foreignField": "_id",
+                        "as": "supplier"
+                    }},
+
+                    {"$unwind": "$supplier"}
+                ])
+
+                if products:
+                    products = json.loads(dumps(products))
+
+                    return jsonify({
+                        "status": "200",
+                        "message": "products_searched_ok",
+                        "data": products
+                    })
+
+                else:
+                    return jsonify({
+                        "status": "404",
+                        "message": "products_not_found",
+                        "data": []
+                    })
+
+            else:
+                return jsonify({
+                    "status": "404",
+                    "message": "supplier_not_found",
+                    "data": []
+                })
+
+        else:
+            return jsonify({
+                "status": "404",
+                "message": "supplier_not_found",
+                "data": []
+            })
