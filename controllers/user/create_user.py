@@ -19,6 +19,7 @@ def create_user():
     email = user["email"]
     first_name = user["first_name"]
     last_name = user["last_name"]
+    contact_number = user["contact_number"]
     password = user["password"]
     role = user["role"]
     favorites = []
@@ -29,6 +30,7 @@ def create_user():
         "email": email,
         "first_name": first_name,
         "last_name": last_name,
+        "contact_number": contact_number,
         "password": password,
         "role": role,
         "favorites": favorites,
