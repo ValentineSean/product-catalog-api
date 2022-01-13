@@ -10,6 +10,7 @@
   - CLOUDINARY_API_KEY (Cloudinary API key)
   - CLOUDINARY_API_SECRET (Cloudinary API secret)
   - CLOUDINARY_CLOUD_NAME (Cloudinary cloud name)
+- Open command prompt:
 - create virtual environment using the command: `python -m venv [environment_name]`
 - active virtual environment using the command: `[environment_name]\Scripts\activate`
 - install all libraries using the command: `pip install -r requirements.txt`
