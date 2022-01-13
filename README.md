@@ -15,4 +15,6 @@
 - install all libraries using the command: `pip install -r requirements.txt`
 - set flask app using command: `set FLASK_APP=app.py`
 - if on development server, set flask app using command: `set FLASK_ENV=development`
-- run the application using command `flask`
+- run the application using command `flask run`
+
+_Please note: This is a Windows 10 set up_
