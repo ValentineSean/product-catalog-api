@@ -2,6 +2,7 @@ import os
 import json
 
 from flask import Flask, jsonify
+from flask_cors import CORS
 from flask_pymongo import PyMongo
 from dotenv import load_dotenv
 
@@ -43,6 +44,8 @@ from controllers.product.rate_product import rate_product_blueprint
 from controllers.product.search_products import search_products_blueprint
 
 app = Flask(__name__)
+
+CORS(app)
 
 def create_app():
     # Database Connection

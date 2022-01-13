@@ -1,4 +1,5 @@
 import json
+import math
 
 from datetime import datetime
 from bson.json_util import dumps
@@ -19,6 +20,7 @@ def rate_product():
     product_id = product["product_id"]
     # product_id = product_id["$oid"]
     rating = product["rating"]
+    print(rating)
 
     product = mongo.db.product.find_one({"$and": [{"_id": ObjectId(product_id)}, {"record_status": "ACTIVE"}]})
 
@@ -30,6 +32,8 @@ def rate_product():
         old_rating = product["rating"]
 
         new_rating = ((old_rating * votes) + rating) / (new_votes)
+        new_rating = int(math.ceil(new_rating))
+        print(new_rating)
 
         mongo.db.product.update_one({
             "_id": ObjectId(product_id),
