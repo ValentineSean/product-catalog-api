@@ -1,7 +1,7 @@
 # product-catalog-api
 
 ## Steps to run the API:
-- create .env file and define the following variables:
+- create _.env_ file and define the following variables:
   - DATABASEUSER (MongoDB user)
   - DATABASEPASSWORD (MongoDB password)
   - CLUSTER (MongoDB cluster)
