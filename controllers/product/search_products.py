@@ -17,6 +17,7 @@ def search_product():
     search_product = request.json
 
     search_string = search_product["search_string"]
+    print(search_string)
 
     if search_criteria == "product":
         products = mongo.db.product.aggregate([
@@ -56,6 +57,7 @@ def search_product():
 
         if products:
             products = json.loads(dumps(products))
+            print(products)
 
             if len(products) > 0:
 
